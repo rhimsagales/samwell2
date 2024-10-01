@@ -1,0 +1,186 @@
+<!--Sammuel Barrientos M.-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Order Form</title>
+    <link rel="stylesheet" href="STYLE2.CSS">
+  </head>
+  <body>
+    <div class="Uniform-form">
+      <h2>Order Form</h2>
+
+      <div class="user-info">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="gmail">Gmail</label>
+        <input type="email" id="gmail" name="gmail" required>
+
+        <label for="cellphone">Cellphone</label>
+        <input type="tel" id="cellphone" name="cellphone" required>
+
+        <label for="studentNumber">Student Number</label>
+        <input type="text" id="studentNumber" name="studentNumber" required>
+
+        <label for="campus">Campus</label>
+        <select id="campus" name="campus" required>
+          <option value="">Select Campus</option>
+          <option value="Cainta Main Campus">Cainta Main Campus</option>
+          <option value="Antipolo Campus">Antipolo Campus</option>
+          <option value="Taytay Campus">Taytay Campus</option>
+          <option value="Sumulong Campus">Sumulong Campus</option>
+          <option value="San Mateo Campus">San Mateo Campus</option>
+          <option value="Cogeo Campus">Cogeo Campus</option>
+          <option value="Binangonan Campus">Binangonan Campus</option>
+        </select>
+      </div>
+
+      <div class="Uniform-item">
+        <img src="https://i.imghippo.com/files/xzhYt1727424962.png" alt="NSTP"> <!-- Credits for the Pic: Mariel Cesista Secreto -->
+        <div class="Uniform-info">
+          <h3>NSTP</h3>
+          <p>₱350.00</p>
+          <input class="quantity-input" type="number" id="NSTPQty" value="1" min="1">
+          <select class="dropdown" id="NSTPSize">
+            <option value="">Size</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="Uniform-item">
+        <img src="https://i.imghippo.com/files/9Uqb81727627972.png" alt="UNIFORMPE" > <!-- Credits for the Pic: Mariel Cesista Secreto -->
+        <div class="Uniform-info">
+          <h3>UNIFORM PE</h3>
+          <p>₱150.00</p>
+          <input class="quantity-input" type="number" id="UNIFORMPEQty" value="1" min="1">
+          <select class="dropdown" id="UNIFORMPESize">
+            <option value="">Size</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="Uniform-item">
+        <img src="https://i.imghippo.com/files/YArEu1727670298.png" alt="Joggerpants" > <!-- Credits for the Pic: Mariel Cesista Secreto -->
+        <div class="Uniform-info">
+          <h3>Jogger Pants</h3>
+          <p>₱300.00</p>
+          <input class="quantity-input" type="number" id="JoggerpantsQty" value="1" min="1">
+          <select class="dropdown" id="JoggerpantsSize">
+            <option value="">Size</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="successMessage" style="display: none; color: green; margin-top: 10px;">
+        Order submitted successfully!
+      </div>
+
+      <div class="button-container">
+        <button id="submitOrder">Submit</button>
+        <button id="downloadBtn">Download</button>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+      import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+      const firebaseConfig = {
+          apiKey: "AIzaSyBS4L5dR4gumh6a9v8lx9DojAedQ3CoCk8",
+          authDomain: "samwell05-34045.firebaseapp.com",
+          projectId: "samwell05-34045",
+          storageBucket: "samwell05-34045.appspot.com",
+          messagingSenderId: "689664296992",
+          appId: "1:689664296992:web:5232f5e235f2bd20b71445"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      function saveOrderToFirebase(order) {
+        const orderId = Math.random().toString(36).substr(2, 9);
+        set(ref(db, 'orders/' + orderId), order);
+      }
+
+      function collectOrderData() {
+        const orderData = {
+          user: {
+            username: document.getElementById('username').value,
+            gmail: document.getElementById('gmail').value,
+            cellphone: document.getElementById('cellphone').value,
+            studentNumber: document.getElementById('studentNumber').value,
+            campus: document.getElementById('campus').value
+          },
+          NSTP: {
+            qty: document.getElementById('NSTPQty').value,
+            size: document.getElementById('NSTPSize').value
+          },
+          UniformPE: {
+            qty: document.getElementById('UNIFORMPEQty').value,
+            size: document.getElementById('UNIFORMPESize').value
+          },
+          Joggerpants: {
+            qty: document.getElementById('JoggerpantsQty').value,
+            size: document.getElementById('JoggerpantsSize').value
+          }
+        };
+
+        return orderData;
+      }
+
+      function convertToCSV(data) {
+        const headers = ['Type', 'Quantity', 'Size'];
+        const rows = [];
+
+        rows.push(['Username', data.user.username]);
+        rows.push(['Gmail', data.user.gmail]);
+        rows.push(['Cellphone', data.user.cellphone]);
+        rows.push(['Student Number', data.user.studentNumber]);
+        rows.push(['Campus', data.user.campus]);
+
+        Object.keys(data).forEach(UniformType => {
+          if (UniformType !== 'user') {
+            const UniformData = data[UniformType];
+            rows.push([UniformType, UniformData.qty, UniformData.size]);
+          }
+        });
+
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += headers.join(',') + '\n';
+        rows.forEach(row => {
+          csvContent += row.join(',') + '\n';
+        });
+
+        return encodeURI(csvContent);
+      }
+
+      document.getElementById('submitOrder').addEventListener('click', () => {
+        const orderData = collectOrderData();
+        saveOrderToFirebase(orderData);
+
+        document.getElementById('successMessage').style.display = 'block';
+      });
+
+      document.getElementById('downloadBtn').addEventListener('click', () => {
+        const orderData = collectOrderData();
+        const csvContent = convertToCSV(orderData);
+
+        const link = document.createElement('a');
+        link.setAttribute('href', csvContent);
+        link.setAttribute('download', 'order_data.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    </script>
+  </body>
+</html>
