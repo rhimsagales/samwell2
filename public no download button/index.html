@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Form</title>
+    <link rel="stylesheet" href="STYLE2.CSS">
+  </head>
+  <body>
+    <div class="Uniform-form">
+      <h2>Order Form</h2>
+
+      <div class="user-info">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="gmail">Gmail</label>
+        <input type="email" id="gmail" name="gmail" required>
+
+        <label for="cellphone">Cellphone</label>
+        <input type="tel" id="cellphone" name="cellphone" required>
+
+        <label for="studentNumber">Student Number</label>
+        <input type="text" id="studentNumber" name="studentNumber" required>
+
+        <label for="campus">Campus</label>
+        <select id="campus" name="campus" required>
+          <option value="">Select Campus</option>
+          <option value="Cainta Main Campus">Cainta Main Campus</option>
+          <option value="Antipolo Campus">Antipolo Campus</option>
+          <option value="Taytay Campus">Taytay Campus</option>
+          <option value="Sumulong Campus">Sumulong Campus</option>
+          <option value="San Mateo Campus">San Mateo Campus</option>
+          <option value="Cogeo Campus">Cogeo Campus</option>
+          <option value="Binangonan Campus">Binangonan Campus</option>
+        </select>
+      </div>
+
+      <div class="Uniform-item">
+        <img src="https://i.imghippo.com/files/xzhYt1727424962.png" alt="NSTP">
+        <div class="Uniform-info">
+          <h3>NSTP</h3>
+          <p>₱350.00</p>
+          <input class="quantity-input" type="number" id="NSTPQty" value="1" min="1">
+          <select class="dropdown" id="NSTPSize">
+            <option value="">Size</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="Uniform-item">
+        <img src="https://i.imghippo.com/files/9Uqb81727627972.png" alt="UNIFORMPE">
+        <div class="Uniform-info">
+          <h3>UNIFORM PE</h3>
+          <p>₱150.00</p>
+          <input class="quantity-input" type="number" id="UNIFORMPEQty" value="1" min="1">
+          <select class="dropdown" id="UNIFORMPESize">
+            <option value="">Size</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="Uniform-item">
+        <img src="https://i.imghippo.com/files/YArEu1727670298.png" alt="Joggerpants">
+        <div class="Uniform-info">
+          <h3>Jogger Pants</h3>
+          <p>₱300.00</p>
+          <input class="quantity-input" type="number" id="JoggerpantsQty" value="1" min="1">
+          <select class="dropdown" id="JoggerpantsSize">
+            <option value="">Size</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="successMessage" style="display: none; color: green; margin-top: 10px;">
+        Order submitted successfully!
+      </div>
+
+      <div class="button-container">
+        <button id="submitOrder">Submit</button>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+      import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyC7fHXucYBGT8hIR10GtyQP58jPML1vnng",
+        authDomain: "sammuel-17249.firebaseapp.com",
+        databaseURL: "https://sammuel-17249-default-rtdb.firebaseio.com",
+        projectId: "sammuel-17249",
+        storageBucket: "sammuel-17249.appspot.com",
+        messagingSenderId: "827538260486",
+        appId: "1:827538260486:web:e30109f052384502b6b987",
+        measurementId: "G-V4ZKJ8CY34"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      function saveOrderToFirebase(order) {
+        const orderId = Math.random().toString(36).substr(2, 9);
+        set(ref(db, 'orders/' + orderId), order);
+      }
+
+      function collectOrderData() {
+        const orderData = {
+          user: {
+            username: document.getElementById('username').value,
+            gmail: document.getElementById('gmail').value,
+            cellphone: document.getElementById('cellphone').value,
+            studentNumber: document.getElementById('studentNumber').value,
+            campus: document.getElementById('campus').value
+          },
+          NSTP: {
+            qty: document.getElementById('NSTPQty').value,
+            size: document.getElementById('NSTPSize').value
+          },
+          UniformPE: {
+            qty: document.getElementById('UNIFORMPEQty').value,
+            size: document.getElementById('UNIFORMPESize').value
+          },
+          Joggerpants: {
+            qty: document.getElementById('JoggerpantsQty').value,
+            size: document.getElementById('JoggerpantsSize').value
+          }
+        };
+
+        return orderData;
+      }
+
+      document.getElementById('submitOrder').addEventListener('click', () => {
+        const orderData = collectOrderData();
+        saveOrderToFirebase(orderData);
+
+        document.getElementById('successMessage').style.display = 'block';
+      });
+    </script>
+  </body>
+</html>
